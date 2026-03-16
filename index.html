@@ -77,6 +77,10 @@
       font-size:clamp(2.2rem, 5vw, 4.3rem);
       line-height:1.12;
       letter-spacing:-0.04em;
+      background:linear-gradient(135deg, #7c3aed 15%, #3b82f6 85%);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
     }
     .hero p{
       margin:0 0 28px;
@@ -129,6 +133,8 @@
     }
     .score{
       font-size:2.2rem; font-weight:800; letter-spacing:-0.03em;
+      color:#ffffff;
+      text-shadow:0 4px 18px rgba(255,255,255,0.12);
     }
     .bars{display:grid; gap:10px; margin-top:14px}
     .bar-wrap{display:grid; grid-template-columns:56px 1fr 42px; gap:10px; align-items:center; font-size:0.92rem}
@@ -192,11 +198,16 @@
       min-width:220px;
       border:none; outline:none;
       border-radius:14px; padding:15px 16px;
-      background:rgba(255,255,255,0.1);
-      color:white; border:1px solid rgba(255,255,255,0.12);
+      background:#ffffff;
+      color:#5b5568; border:2px solid rgba(124,58,237,0.32);
+      box-shadow:0 0 0 4px rgba(124,58,237,0.08);
       font-size:1rem;
     }
-    input::placeholder{color:#cfc6ea}
+    input::placeholder{color:#8a8397}
+    input[type="email"]:focus{
+      border-color:#7c3aed;
+      box-shadow:0 0 0 4px rgba(124,58,237,0.16);
+    }
     .note{font-size:0.9rem; color:#cbbfe9; margin-top:10px}
     .small-list{display:grid; gap:12px}
     .small-item{
