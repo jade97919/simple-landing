@@ -40,6 +40,23 @@
       display:flex; align-items:center; justify-content:space-between;
       padding:16px 0;
     }
+    .section-tabs{
+      display:flex;
+      gap:18px;
+      padding:0 0 16px;
+      overflow-x:auto;
+      scrollbar-width:none;
+      justify-content:flex-end;
+    }
+    .section-tabs::-webkit-scrollbar{display:none}
+    .section-tab{
+      color:#221a2d;
+      font-size:0.96rem;
+      font-weight:700;
+      white-space:nowrap;
+      opacity:0.76;
+    }
+    .section-tab:hover{opacity:1}
     .logo{font-weight:800; font-size:1.25rem; letter-spacing:-0.03em}
     .logo span{color:var(--primary2)}
     .nav-btn, .primary-btn, .ghost-btn{
@@ -221,8 +238,9 @@
       background:linear-gradient(90deg, #7c3aed, #3b82f6);
       margin-bottom:18px;
     }
+    .waitlist-card.recommend-card{display:none}
     .waitlist-wrap{
-      display:grid; grid-template-columns:1fr 1fr; gap:18px; align-items:stretch;
+      display:grid; grid-template-columns:1fr; gap:18px; align-items:stretch;
     }
     form{
       display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;
@@ -249,12 +267,8 @@
       min-width:220px;
       padding:16px 24px;
     }
-    .waitlist-card.recommend-card form,
-    .waitlist-card.recommend-card .note,
-    .waitlist-card.recommend-card .success{
-      display:none;
-    }
     .small-list{display:grid; gap:12px}
+    .recommendations-panel .small-list{grid-template-columns:repeat(2, minmax(0,1fr))}
     .small-item{
       background:linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,244,255,0.9));
       border:1px solid rgba(124,58,237,0.14);
@@ -293,9 +307,11 @@
       padding:12px 14px;
     }
     @media (max-width: 900px){
-      .hero-grid, .waitlist-wrap, .value-grid{grid-template-columns:1fr}
+      .hero-grid, .value-grid{grid-template-columns:1fr}
       .features{grid-template-columns:1fr}
       .hero{padding-top:56px}
+      .section-tabs{padding-bottom:12px}
+      .recommendations-panel .small-list{grid-template-columns:1fr}
     }
   </style>
 </head>
@@ -306,6 +322,12 @@
         <a href="#" class="logo">Sing<span>Go</span></a>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSeZYjZUE8x_2HwCKXNQdD84KFKlSOEoJrNMD86HvfODLAdrYQ/viewform" target="_blank" rel="noreferrer" class="nav-btn ghost-btn">출시 알림 받기</a>
       </nav>
+      <div class="section-tabs">
+        <a href="#intro" class="section-tab">서비스 소개</a>
+        <a href="#features" class="section-tab">핵심 기능</a>
+        <a href="#value" class="section-tab">고유 가치</a>
+        <a href="#recommend" class="section-tab">추천 대상</a>
+      </div>
     </div>
   </header>
 
@@ -366,7 +388,7 @@
       </div>
     </section>
 
-    <section>
+    <section id="intro">
       <div class="container">
         <div class="section-head">
           <h2>SingGo는 어떤 서비스인가요?</h2>
@@ -429,7 +451,7 @@
       </div>
     </section>
 
-    <section>
+    <section id="value">
       <div class="container">
         <div class="section-head">
           <h2>SingGo만의 고유 가치</h2>
@@ -461,7 +483,7 @@
       </div>
     </section>
 
-    <section id="waitlist">
+    <section id="recommend">
       <div class="container">
         <div class="waitlist-wrap">
           <div class="waitlist-card recommend-card">
@@ -497,7 +519,7 @@
             <div id="successMessage" class="success">등록이 완료되었습니다. SingGo 출시 소식을 가장 먼저 알려드릴게요.</div>
           </div>
 
-          <div class="waitlist-card">
+          <div class="waitlist-card recommendations-panel">
             <h3>이런 분들께 추천해요</h3>
             <div class="small-list">
               <div class="small-item">노래를 좋아하지만 내 실력을 더 키워보고 싶은 사람</div>
