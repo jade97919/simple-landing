@@ -465,6 +465,7 @@
               action="https://docs.google.com/forms/d/e/1FAIpQLSeZYjZUE8x_2HwCKXNQdD84KFKlSOEoJrNMD86HvfODLAdrYQ/formResponse"
               method="POST"
               target="hidden_iframe"
+              accept-charset="UTF-8"
             >
               <input type="hidden" name="entry.894545863" value="동의" />
               <input type="email" id="email" placeholder="이메일을 입력하세요" required />
@@ -499,9 +500,11 @@
     const consentInput = form.querySelector('input[name="entry.894545863"]');
     const successMessage = document.getElementById('successMessage');
 
+    form.acceptCharset = 'UTF-8';
+    emailInput.name = 'entry.80037459';
+    consentInput.value = '\uB3D9\uC758';
+
     form.addEventListener('submit', function() {
-      emailInput.name = 'entry.80037459';
-      consentInput.value = '\uB3D9\uC758';
       successMessage.style.display = 'block';
       setTimeout(function() {
         form.reset();
