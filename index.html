@@ -161,6 +161,7 @@
       border:1px solid var(--line);
       border-radius:24px;
       padding:26px;
+      box-shadow:0 18px 38px rgba(88,57,140,0.08);
     }
     .features{
       display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:16px;
@@ -186,11 +187,33 @@
       margin-top:18px;
     }
     .pill{
-      background:rgba(255,255,255,0.06);
-      border:1px solid rgba(255,255,255,0.08);
-      border-radius:20px; padding:18px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.98), rgba(246,240,255,0.88));
+      border:1px solid rgba(124,58,237,0.14);
+      border-radius:20px;
+      padding:18px;
+      box-shadow:0 10px 24px rgba(124,58,237,0.06);
     }
-    .pill strong{display:block; margin-bottom:8px}
+    .pill strong{
+      display:block;
+      margin-bottom:8px;
+      color:#34214f;
+    }
+    .value-card{
+      position:relative;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.96), rgba(246,240,255,0.92));
+      overflow:hidden;
+    }
+    .value-card::before,
+    .waitlist-card.recommend-card::before{
+      content:"";
+      display:block;
+      width:72px;
+      height:4px;
+      border-radius:999px;
+      background:linear-gradient(90deg, #7c3aed, #3b82f6);
+      margin-bottom:18px;
+    }
     .waitlist-wrap{
       display:grid; grid-template-columns:1fr 1fr; gap:18px; align-items:stretch;
     }
@@ -215,10 +238,26 @@
     .note{font-size:0.9rem; color:#cbbfe9; margin-top:10px}
     .small-list{display:grid; gap:12px}
     .small-item{
-      background:rgba(255,255,255,0.05);
-      border:1px solid rgba(255,255,255,0.08);
+      background:linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,244,255,0.9));
+      border:1px solid rgba(124,58,237,0.14);
       border-radius:18px;
       padding:16px;
+      color:#4c4260;
+      box-shadow:0 10px 22px rgba(124,58,237,0.05);
+      position:relative;
+      padding-left:42px;
+    }
+    .small-item::before{
+      content:"";
+      position:absolute;
+      left:16px;
+      top:50%;
+      width:10px;
+      height:10px;
+      border-radius:999px;
+      transform:translateY(-50%);
+      background:linear-gradient(135deg, #7c3aed, #c084fc);
+      box-shadow:0 0 0 6px rgba(124,58,237,0.08);
     }
     footer{
       padding:34px 0 50px;
@@ -407,7 +446,7 @@
     <section id="waitlist">
       <div class="container">
         <div class="waitlist-wrap">
-          <div class="waitlist-card">
+          <div class="waitlist-card recommend-card">
             <h3>SingGo 출시 알림 받기</h3>
             <p>
               SingGo가 출시되면 가장 먼저 알려드립니다.
