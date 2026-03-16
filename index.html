@@ -466,7 +466,6 @@
               method="POST"
               target="hidden_iframe"
             >
-              <input type="hidden" id="waitlistEmailHidden" name="entry.80037459" />
               <input type="hidden" name="entry.894545863" value="동의" />
               <input type="email" id="email" placeholder="이메일을 입력하세요" required />
               <button type="submit" class="primary-btn">출시 알림 받기</button>
@@ -497,11 +496,12 @@
   <script>
     const form = document.getElementById('waitlistForm');
     const emailInput = document.getElementById('email');
-    const emailHiddenInput = document.getElementById('waitlistEmailHidden');
+    const consentInput = form.querySelector('input[name="entry.894545863"]');
     const successMessage = document.getElementById('successMessage');
 
     form.addEventListener('submit', function() {
-      emailHiddenInput.value = emailInput.value;
+      emailInput.name = 'entry.80037459';
+      consentInput.value = '\uB3D9\uC758';
       successMessage.style.display = 'block';
       setTimeout(function() {
         form.reset();
