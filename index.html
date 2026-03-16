@@ -460,10 +460,18 @@
               이메일을 남기시면 서비스 출시 소식을 받아보실 수 있습니다.
             </p>
 
-            <form id="waitlistForm">
+            <form
+              id="waitlistForm"
+              action="https://docs.google.com/forms/d/e/1FAIpQLSeZYjZUE8x_2HwCKXNQdD84KFKlSOEoJrNMD86HvfODLAdrYQ/formResponse"
+              method="POST"
+              target="hidden_iframe"
+            >
+              <input type="hidden" id="waitlistEmailHidden" name="entry.80037459" />
+              <input type="hidden" name="entry.894545863" value="동의" />
               <input type="email" id="email" placeholder="이메일을 입력하세요" required />
               <button type="submit" class="primary-btn">출시 알림 받기</button>
             </form>
+            <iframe name="hidden_iframe" title="Google Form Submission" style="display:none;"></iframe>
             <div class="note">입력하신 이메일은 SingGo 출시 알림 외에는 사용되지 않습니다.</div>
             <div id="successMessage" class="success">등록이 완료되었습니다. SingGo 출시 소식을 가장 먼저 알려드릴게요.</div>
           </div>
@@ -488,12 +496,16 @@
 
   <script>
     const form = document.getElementById('waitlistForm');
+    const emailInput = document.getElementById('email');
+    const emailHiddenInput = document.getElementById('waitlistEmailHidden');
     const successMessage = document.getElementById('successMessage');
 
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
+    form.addEventListener('submit', function() {
+      emailHiddenInput.value = emailInput.value;
       successMessage.style.display = 'block';
-      form.reset();
+      setTimeout(function() {
+        form.reset();
+      }, 300);
     });
   </script>
 </body>
