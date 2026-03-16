@@ -1,444 +1,268 @@
-from pathlib import Path
 
-html = r'''<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SingGo | 노래하고, 공유하고, 함께 성장하다</title>
-  <style>
-    :root{
-      --bg:#0f0b1f;
-      --bg2:#1b1235;
-      --primary:#8b5cf6;
-      --primary2:#c084fc;
-      --text:#f8f7ff;
-      --muted:#d6d1ea;
-      --card:rgba(255,255,255,0.08);
-      --line:rgba(255,255,255,0.12);
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo",
-      "Noto Sans KR", "Malgun Gothic", sans-serif;
-      color:var(--text);
-      background:
-        radial-gradient(circle at top left, rgba(192,132,252,0.22), transparent 30%),
-        radial-gradient(circle at top right, rgba(139,92,246,0.22), transparent 30%),
-        linear-gradient(180deg, var(--bg), var(--bg2));
-      line-height:1.6;
-    }
-    a{text-decoration:none;color:inherit}
-    .container{width:min(1120px, calc(100% - 40px)); margin:0 auto}
-    header{
-      position:sticky; top:0; z-index:10;
-      backdrop-filter: blur(14px);
-      background:rgba(15,11,31,0.65);
-      border-bottom:1px solid rgba(255,255,255,0.06);
-    }
-    nav{
-      display:flex; align-items:center; justify-content:space-between;
-      padding:16px 0;
-    }
-    .logo{font-weight:800; font-size:1.25rem; letter-spacing:-0.03em}
-    .logo span{color:var(--primary2)}
-    .nav-btn, .primary-btn, .ghost-btn{
-      display:inline-flex; align-items:center; justify-content:center;
-      border-radius:999px; padding:12px 18px; font-weight:700;
-      transition:0.2s ease; border:1px solid transparent;
-      cursor:pointer;
-    }
-    .primary-btn{
-      background:linear-gradient(135deg, var(--primary), var(--primary2));
-      color:white;
-      box-shadow:0 10px 28px rgba(139,92,246,0.32);
-    }
-    .primary-btn:hover{transform:translateY(-1px)}
-    .ghost-btn{
-      background:rgba(255,255,255,0.03);
-      border-color:rgba(255,255,255,0.1);
-      color:var(--text);
-    }
-    .hero{
-      padding:84px 0 60px;
-    }
-    .hero-grid{
-      display:grid; grid-template-columns:1.1fr 0.9fr; gap:36px; align-items:center;
-    }
-    .badge{
-      display:inline-block;
-      padding:8px 12px; border-radius:999px;
-      background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1);
-      color:#eee7ff; font-size:0.92rem; margin-bottom:18px;
-    }
-    h1{
-      margin:0 0 18px;
-      font-size:clamp(2.2rem, 5vw, 4.3rem);
-      line-height:1.12;
-      letter-spacing:-0.04em;
-    }
-    .hero p{
-      margin:0 0 28px;
-      color:var(--muted);
-      font-size:1.08rem;
-      max-width:620px;
-    }
-    .button-row{display:flex; gap:12px; flex-wrap:wrap}
-    .hero-card{
-      background:linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.05));
-      border:1px solid var(--line);
-      border-radius:28px;
-      padding:22px;
-      box-shadow:0 30px 60px rgba(0,0,0,0.2);
-    }
-    .phone{
-      width:min(340px, 100%);
-      margin:0 auto;
-      background:#120d24;
-      border:1px solid rgba(255,255,255,0.12);
-      border-radius:34px;
-      padding:14px;
-      box-shadow:0 24px 55px rgba(0,0,0,0.35);
-    }
-    .screen{
-      background:linear-gradient(180deg, #221647, #161028);
-      border-radius:26px;
-      padding:18px;
-      min-height:570px;
-      position:relative;
-      overflow:hidden;
-    }
-    .screen::after{
-      content:"";
-      position:absolute;
-      inset:auto -40px -60px auto;
-      width:160px; height:160px;
-      background:radial-gradient(circle, rgba(192,132,252,0.4), transparent 60%);
-    }
-    .mock-top{
-      display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;
-      color:#eee7ff; font-size:0.92rem;
-    }
-    .score-card, .mini-card{
-      background:rgba(255,255,255,0.08);
-      border:1px solid rgba(255,255,255,0.08);
-      border-radius:20px;
-      padding:16px;
-      margin-bottom:12px;
-    }
-    .score{
-      font-size:2.2rem; font-weight:800; letter-spacing:-0.03em;
-    }
-    .bars{display:grid; gap:10px; margin-top:14px}
-    .bar-wrap{display:grid; grid-template-columns:56px 1fr 42px; gap:10px; align-items:center; font-size:0.92rem}
-    .bar{
-      height:10px; border-radius:999px; background:rgba(255,255,255,0.12); overflow:hidden;
-    }
-    .bar span{
-      display:block; height:100%;
-      background:linear-gradient(90deg, #8b5cf6, #c084fc);
-      border-radius:999px;
-    }
-    section{padding:34px 0}
-    .section-head{margin-bottom:22px}
-    .section-head h2{
-      margin:0 0 8px; font-size:clamp(1.7rem, 3vw, 2.4rem); letter-spacing:-0.03em;
-    }
-    .section-head p{margin:0; color:var(--muted)}
-    .intro-card, .value-card, .waitlist-card{
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:24px;
-      padding:26px;
-    }
-    .features{
-      display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:16px;
-    }
-    .feature{
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:24px;
-      padding:22px;
-    }
-    .icon{
-      width:44px; height:44px; border-radius:14px;
-      display:grid; place-items:center;
-      background:linear-gradient(135deg, rgba(139,92,246,0.26), rgba(192,132,252,0.26));
-      margin-bottom:14px; font-size:1.2rem;
-    }
-    .feature h3, .value-card h3, .waitlist-card h3{
-      margin:0 0 8px; font-size:1.2rem;
-    }
-    .feature p, .value-card p, .waitlist-card p, .intro-card p{margin:0; color:var(--muted)}
-    .value-grid{
-      display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:16px;
-      margin-top:18px;
-    }
-    .pill{
-      background:rgba(255,255,255,0.06);
-      border:1px solid rgba(255,255,255,0.08);
-      border-radius:20px; padding:18px;
-    }
-    .pill strong{display:block; margin-bottom:8px}
-    .waitlist-wrap{
-      display:grid; grid-template-columns:1fr 1fr; gap:18px; align-items:stretch;
-    }
-    form{
-      display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;
-    }
-    input[type="email"]{
-      flex:1 1 260px;
-      min-width:220px;
-      border:none; outline:none;
-      border-radius:14px; padding:15px 16px;
-      background:rgba(255,255,255,0.1);
-      color:white; border:1px solid rgba(255,255,255,0.12);
-      font-size:1rem;
-    }
-    input::placeholder{color:#cfc6ea}
-    .note{font-size:0.9rem; color:#cbbfe9; margin-top:10px}
-    .small-list{display:grid; gap:12px}
-    .small-item{
-      background:rgba(255,255,255,0.05);
-      border:1px solid rgba(255,255,255,0.08);
-      border-radius:18px;
-      padding:16px;
-    }
-    footer{
-      padding:34px 0 50px;
-      color:#cfc6ea;
-      text-align:center;
-      font-size:0.95rem;
-    }
-    .success{
-      display:none;
-      margin-top:14px;
-      color:#f3e8ff;
-      background:rgba(139,92,246,0.18);
-      border:1px solid rgba(192,132,252,0.28);
-      border-radius:14px;
-      padding:12px 14px;
-    }
-    @media (max-width: 900px){
-      .hero-grid, .waitlist-wrap, .value-grid{grid-template-columns:1fr}
-      .features{grid-template-columns:1fr}
-      .hero{padding-top:56px}
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <div class="container">
-      <nav>
-        <a href="#" class="logo">Sing<span>Go</span></a>
-        <a href="#waitlist" class="nav-btn ghost-btn">출시 알림 받기</a>
-      </nav>
-    </div>
-  </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SingGo - AI 보컬 분석 노래 커뮤니티</title>
+    <meta name="description" content="AI가 분석해주는 새로운 노래 커뮤니티. 음정, 박자, 발성까지 정밀하게 분석하고, 함께 노래하며 성장하세요.">
+    <meta name="author" content="SingGo" />
+    
+    
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:title" content="SingGo - AI 보컬 분석 노래 커뮤니티">
+  <meta name="twitter:title" content="SingGo - AI 보컬 분석 노래 커뮤니티">
+  <meta property="og:description" content="AI가 분석해주는 새로운 노래 커뮤니티. 음정, 박자, 발성까지 정밀하게 분석하고, 함께 노래하며 성장하세요.">
+  <meta name="twitter:description" content="AI가 분석해주는 새로운 노래 커뮤니티. 음정, 박자, 발성까지 정밀하게 분석하고, 함께 노래하며 성장하세요.">
+  <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/52f6030f-fc8f-4ad9-a5c3-eb87a3257803/id-preview-433711cf--c92354f3-6dd8-43eb-82d7-2e49dc0a9dda.lovable.app-1773621070944.png">
+  <meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/52f6030f-fc8f-4ad9-a5c3-eb87a3257803/id-preview-433711cf--c92354f3-6dd8-43eb-82d7-2e49dc0a9dda.lovable.app-1773621070944.png">
+  <script type="module" crossorigin src="/assets/index-BXJ3QHAN.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-DT-TIwOy.css">
 
-  <main>
-    <section class="hero">
-      <div class="container hero-grid">
-        <div>
-          <div class="badge">AI가 분석해주는 새로운 노래 커뮤니티</div>
-          <h1>노래하고,<br>공유하고,<br>함께 성장하다</h1>
-          <p>
-            SingGo는 단순히 노래를 부르는 앱이 아닙니다.
-            AI 보컬 분석과 커뮤니티를 통해 내 노래를 기록하고,
-            다른 사람들과 소통하며 실력을 성장시키는 노래 플랫폼입니다.
-          </p>
-          <div class="button-row">
-            <a href="#waitlist" class="primary-btn">출시 알림 받기</a>
-            <a href="#features" class="ghost-btn">기능 살펴보기</a>
-          </div>
-        </div>
+<style>
+	@font-face {
+		font-family: 'CameraPlainVariable';
+		src: url('https://cdn.gpteng.co/mcp-widgets/v1/fonts/CameraPlainVariable.woff2') format('woff2');
+		font-weight: 100 900;
+		font-style: normal;
+		font-display: swap;
+	}
 
-        <div class="hero-card">
-          <div class="phone">
-            <div class="screen">
-              <div class="mock-top">
-                <strong>Judy님의 AI 보컬 리포트</strong>
-                <span>오늘의 점수</span>
-              </div>
-              <div class="score-card">
-                <div style="color:#d7ccf3;font-size:0.95rem;">8282 · 상위 10%</div>
-                <div class="score">77.5점</div>
-                <div style="color:#d7ccf3;font-size:0.95rem;">최근 기록에서 고음 구간 안정성이 개선되고 있어요</div>
-                <div class="bars">
-                  <div class="bar-wrap">
-                    <span>음정</span><div class="bar"><span style="width:82%"></span></div><strong>82</strong>
-                  </div>
-                  <div class="bar-wrap">
-                    <span>박자</span><div class="bar"><span style="width:76%"></span></div><strong>76</strong>
-                  </div>
-                  <div class="bar-wrap">
-                    <span>발성</span><div class="bar"><span style="width:71%"></span></div><strong>71</strong>
-                  </div>
-                  <div class="bar-wrap">
-                    <span>표현력</span><div class="bar"><span style="width:88%"></span></div><strong>88</strong>
-                  </div>
-                </div>
-              </div>
-              <div class="mini-card">
-                <strong style="display:block;margin-bottom:8px;">추천 곡</strong>
-                <div style="color:#eaddff;">밤편지 · Love wins all · 안아줘</div>
-              </div>
-              <div class="mini-card">
-                <strong style="display:block;margin-bottom:8px;">Voice Stage</strong>
-                <div style="color:#d7ccf3;">좋아요, 댓글, 공유로 함께 성장하는 노래 커뮤니티</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+	#lovable-badge {
+		--badge-bg: #1b1b1b;
+		--badge-text: #c5c1b9;
+		--badge-text-hover: #dcdad5;
+		--badge-radius: 6px;
+		--badge-padding: 8px;
+		--badge-gap: 6px;
+		--badge-shadow: 
+			0 0 0 1px rgba(0, 0, 0, 0.88),
+			0 1px 0 0 rgba(0, 0, 0, 0.04),
+			0 2px 2px -1px rgba(0, 0, 0, 0.08),
+			0 4px 4px -2px rgba(0, 0, 0, 0.08),
+			0 8px 8px -4px rgba(0, 0, 0, 0.08),
+			0 16px 16px -8px rgba(0, 0, 0, 0.08);
+		--badge-transition-duration: 0.2s;
+		--badge-transition-easing: cubic-bezier(0.16, 1, 0.32, 1);
+		--focus-color: #575ECF;
+		--focus-offset: 2px;
+		--focus-width: 2px;
+		
+		position: fixed;
+		bottom: 12px;
+		right: 12px;
+		height: 24px;
+		display: flex;
+		align-items: center;
+		z-index: 1000000;
+		background-color: var(--badge-bg);
+		color: var(--badge-text);
+		border-radius: var(--badge-radius);
+		box-shadow: var(--badge-shadow);
+		font-size: 12px;
+		font-family: CameraPlainVariable, "CameraPlainVariable Fallback", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+		font-weight: 400 !important;
+		text-transform: none !important;
+		font-feature-settings: normal !important;
+		transform: translateZ(0);
+		will-change: transform, opacity;
+	}
 
-    <section>
-      <div class="container">
-        <div class="section-head">
-          <h2>SingGo는 어떤 서비스인가요?</h2>
-        </div>
-        <div class="intro-card">
-          <p>
-            SingGo는 노래를 부르고 끝나는 앱이 아니라,
-            <strong>내 노래를 데이터로 기록하고 성장 과정을 확인할 수 있는 서비스</strong>입니다.
-            AI가 음정, 박자, 발성, 표현력을 분석해 피드백을 제공하고,
-            사용자는 자신의 녹음을 공유하며 다른 사람들과 함께 즐기고 성장할 수 있습니다.
-          </p>
-        </div>
-      </div>
-    </section>
+	#lovable-badge-cta {
+		display: flex;
+		align-items: center;
+		gap: var(--badge-gap);
+		padding: 0 var(--badge-padding);
+		height: 100%;
+		color: inherit;
+		text-decoration: none;
+		white-space: nowrap;
+		border-radius: var(--badge-radius) 0 0 var(--badge-radius);
+		transition: 
+			background-color var(--badge-transition-duration) ease,
+			color var(--badge-transition-duration) ease,
+			transform 0.1s ease;
+	}
 
-    <section id="features">
-      <div class="container">
-        <div class="section-head">
-          <h2>핵심 기능</h2>
-          <p>SingGo가 노래 경험을 더 재미있고, 더 의미 있게 바꿉니다.</p>
-        </div>
+	#lovable-badge-cta:hover {
+		background: rgba(255, 255, 255, 0.04);
+		color: var(--badge-text-hover);
+	}
 
-        <div class="features">
-          <article class="feature">
-            <div class="icon">🎵</div>
-            <h3>AI 보컬 분석</h3>
-            <p>음정, 박자, 발성, 표현력을 분석해 상세 리포트를 제공합니다.</p>
-          </article>
+	#lovable-badge-cta:active {
+		transform: scale(0.98);
+	}
 
-          <article class="feature">
-            <div class="icon">🎙️</div>
-            <h3>노래 기록 및 랭킹</h3>
-            <p>언제 어디서든 노래를 녹음하고, 점수와 월간 랭킹으로 성장 흐름을 확인할 수 있습니다.</p>
-          </article>
+	#lovable-badge-cta:focus {
+		outline: none;
+	}
 
-          <article class="feature">
-            <div class="icon">💬</div>
-            <h3>노래 커뮤니티</h3>
-            <p>내 노래를 공유하고 좋아요, 댓글로 소통하며 함께 노래를 즐길 수 있습니다.</p>
-          </article>
+	#lovable-badge-cta:focus-visible {
+		outline: var(--focus-width) solid var(--focus-color);
+		outline-offset: var(--focus-offset);
+		z-index: 1;
+	}
 
-          <article class="feature">
-            <div class="icon">📈</div>
-            <h3>개인 성장 리포트</h3>
-            <p>잘 부르는 곡, 좋아하는 곡, 실력 변화 흐름을 한눈에 확인할 수 있습니다.</p>
-          </article>
+	#lovable-badge-text {
+		line-height: 1;
+	}
 
-          <article class="feature">
-            <div class="icon">🎧</div>
-            <h3>어울리는 곡 추천</h3>
-            <p>내 음성과 스타일에 맞는 곡을 추천받아 더 잘 부를 수 있는 노래를 찾을 수 있습니다.</p>
-          </article>
+	#lovable-badge-divider {
+		width: 1px;
+		height: 24px;
+		background-color: rgba(255, 255, 255, 0.04);
+		flex-shrink: 0;
+	}
 
-          <article class="feature">
-            <div class="icon">👩‍🏫</div>
-            <h3>보컬 전문가 연결</h3>
-            <p>보컬 트레이너 정보를 확인하고, 필요할 때 레슨으로 자연스럽게 연결할 수 있습니다.</p>
-          </article>
-        </div>
-      </div>
-    </section>
+	#lovable-badge-close {
+		width: 24px;
+		height: 24px;
+		min-width: 24px;
+		min-height: 24px;
+		cursor: pointer;
+		background: none;
+		border: none;
+		padding: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 0 var(--badge-radius) var(--badge-radius) 0;
+		flex-shrink: 0;
+		transition: 
+			background-color var(--badge-transition-duration) ease,
+			transform 0.1s ease;
+	}
 
-    <section>
-      <div class="container">
-        <div class="section-head">
-          <h2>SingGo만의 고유 가치</h2>
-          <p>단순한 노래 앱이 아니라, 노래 실력을 성장시키는 커뮤니티입니다.</p>
-        </div>
+	#lovable-badge-close:hover {
+		background: rgba(255, 255, 255, 0.04);
+	}
 
-        <div class="value-card">
-          <h3>노래를 더 오래, 더 의미 있게 남기는 방식</h3>
-          <p>
-            SingGo는 노래를 부른 순간을 단순한 소비로 끝내지 않습니다.
-            기록하고, 분석하고, 공유하며 내 실력의 변화를 체감하게 만드는 것이 SingGo의 핵심 가치입니다.
-          </p>
+	#lovable-badge-close:active {
+		transform: scale(0.92);
+	}
 
-          <div class="value-grid">
-            <div class="pill">
-              <strong>기록되는 성장</strong>
-              내 노래 데이터를 쌓아가며 실력 변화를 확인할 수 있습니다.
-            </div>
-            <div class="pill">
-              <strong>함께하는 즐거움</strong>
-              다른 사용자와 공유하고 소통하며 혼자보다 더 오래 즐길 수 있습니다.
-            </div>
-            <div class="pill">
-              <strong>구체적인 피드백</strong>
-              감으로가 아니라 AI 분석을 통해 보완 포인트를 확인할 수 있습니다.
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+	#lovable-badge-close:focus {
+		outline: none;
+	}
 
-    <section id="waitlist">
-      <div class="container">
-        <div class="waitlist-wrap">
-          <div class="waitlist-card">
-            <h3>SingGo 출시 알림 받기</h3>
-            <p>
-              SingGo가 출시되면 가장 먼저 알려드립니다.
-              이메일을 남기시면 서비스 출시 소식을 받아보실 수 있습니다.
-            </p>
+	#lovable-badge-close:focus-visible {
+		outline: var(--focus-width) solid var(--focus-color);
+		outline-offset: calc(var(--focus-offset) * -1);
+		z-index: 1;
+	}
 
-            <form id="waitlistForm">
-              <input type="email" id="email" placeholder="이메일을 입력하세요" required />
-              <button type="submit" class="primary-btn">출시 알림 받기</button>
-            </form>
-            <div class="note">입력하신 이메일은 SingGo 출시 알림 외에는 사용되지 않습니다.</div>
-            <div id="successMessage" class="success">등록이 완료되었습니다. SingGo 출시 소식을 가장 먼저 알려드릴게요.</div>
-          </div>
+	#lovable-badge-close svg path {
+		fill: var(--badge-text);
+		transition: fill var(--badge-transition-duration) ease;
+	}
 
-          <div class="waitlist-card">
-            <h3>이런 분들께 추천해요</h3>
-            <div class="small-list">
-              <div class="small-item">노래를 좋아하지만 내 실력을 더 키워보고 싶은 사람</div>
-              <div class="small-item">AI 피드백으로 구체적인 분석을 받아보고 싶은 사람</div>
-              <div class="small-item">노래를 기록하고 공유하며 함께 즐기고 싶은 사람</div>
-              <div class="small-item">나에게 어울리는 곡을 추천받고 싶은 사람</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
+	#lovable-badge-close:hover svg path {
+		fill: var(--badge-text-hover);
+	}
 
-  <footer>
-    © 2026 SingGo. 노래하고, 공유하고, 함께 성장하다.
-  </footer>
+	@media (prefers-reduced-motion: reduce) {
+		#lovable-badge-cta,
+		#lovable-badge-close,
+		#lovable-badge-close svg path {
+			transition: none;
+		}
+		
+		#lovable-badge-cta:active,
+		#lovable-badge-close:active {
+			transform: none;
+		}
+	}
 
-  <script>
-    const form = document.getElementById('waitlistForm');
-    const successMessage = document.getElementById('successMessage');
+	@media (prefers-contrast: high) {
+		#lovable-badge {
+			--badge-bg: #000;
+			--badge-text: #fff;
+			--badge-text-hover: #fff;
+			border: 2px solid currentColor;
+		}
+		
+		#lovable-badge-cta:focus-visible,
+		#lovable-badge-close:focus-visible {
+			outline-width: 3px;
+		}
+	}
+</style>
+<script defer src="https://singgo-ai-voice.lovable.app/~flock.js" data-proxy-url="https://singgo-ai-voice.lovable.app/~api/analytics"></script></head>
 
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      successMessage.style.display = 'block';
-      form.reset();
-    });
-  </script>
+  <body>
+    <div id="root"></div>
+  
+<aside 
+	id="lovable-badge" 
+	role="complementary"
+	dir="ltr"
+	lang="en"
+	aria-label="Edit with Lovable">
+	<a 
+		id="lovable-badge-cta" 
+		target="_blank" 
+		href="https://lovable.dev/projects/c92354f3-6dd8-43eb-82d7-2e49dc0a9dda?utm_source=lovable-badge"
+		rel="noopener"
+		aria-label="Edit with Lovable">
+		<span id="lovable-badge-text">Edit with</span>
+		<svg xmlns="http://www.w3.org/2000/svg" width="52" height="16" fill="none" viewBox="0 0 52 16">
+  <path fill="#FCFBF8" fill-rule="evenodd" d="M20.318 5.25c.643 0 1.206.14 1.69.418a2.81 2.81 0 0 1 1.118 1.191c.266.513.4 1.115.4 1.807s-.134 1.296-.4 1.812a2.81 2.81 0 0 1-1.118 1.193c-.484.278-1.047.418-1.69.418s-1.208-.14-1.695-.418a2.85 2.85 0 0 1-1.125-1.193c-.262-.516-.393-1.12-.393-1.812s.131-1.294.393-1.807a2.848 2.848 0 0 1 1.125-1.191c.487-.279 1.052-.418 1.695-.418Zm0 1.425c-.27 0-.504.076-.7.228-.193.147-.34.37-.443.67-.102.295-.153.66-.153 1.093 0 .435.05.801.153 1.1.102.3.25.524.443.676.196.147.43.22.7.22.27 0 .502-.073.694-.22.193-.152.341-.375.443-.67.103-.299.153-.667.153-1.106 0-.65-.112-1.145-.337-1.481a1.08 1.08 0 0 0-.953-.51ZM32.7 5.25c.61 0 1.127.1 1.549.3.422.197.74.48.953.849.217.368.325.809.325 1.32v2.704c0 .29.02.562.062.812.044.245.108.4.19.466V12h-1.935a5.895 5.895 0 0 1-.105-.684 7.745 7.745 0 0 1-.02-.228 2.293 2.293 0 0 1-.151.203c-.205.242-.47.437-.793.584-.32.143-.685.215-1.094.215-.406 0-.77-.08-1.094-.24a1.845 1.845 0 0 1-.756-.682 1.984 1.984 0 0 1-.27-1.045c0-.606.178-1.069.535-1.388.356-.324.87-.534 1.542-.633l1.125-.16c.225-.032.403-.074.534-.123a.622.622 0 0 0 .288-.196.549.549 0 0 0 .093-.327.65.65 0 0 0-.11-.367.702.702 0 0 0-.32-.27c-.14-.07-.31-.105-.51-.105-.32 0-.576.083-.768.251-.193.164-.298.39-.314.676h-1.923c.016-.434.147-.82.393-1.155.25-.34.596-.604 1.039-.792.442-.189.954-.283 1.535-.283Zm.99 3.498a.98.98 0 0 1-.215.14 2.49 2.49 0 0 1-.584.178l-.473.092c-.315.061-.553.156-.713.283-.155.127-.233.305-.233.534 0 .23.084.412.252.547.168.135.383.203.645.203s.494-.058.694-.173c.201-.118.355-.282.461-.49.11-.21.166-.448.166-.714v-.6Zm4.526-2.375c.065-.125.138-.243.221-.349.197-.25.437-.44.719-.571.282-.135.6-.203.952-.203.528 0 .988.138 1.377.412.389.275.688.67.896 1.186.21.512.314 1.12.314 1.824 0 .7-.107 1.309-.32 1.825-.213.512-.518.906-.915 1.18-.393.275-.854.412-1.383.412-.352 0-.667-.062-.946-.184a1.832 1.832 0 0 1-.7-.554 2.2 2.2 0 0 1-.234-.383V12h-1.843V3h1.862v3.373Zm1.284.296c-.274 0-.51.085-.707.253-.192.163-.338.397-.436.7a3.376 3.376 0 0 0-.148 1.05c0 .406.05.759.148 1.058.098.299.243.53.436.694.197.164.433.246.707.246.279 0 .512-.082.7-.246.193-.164.336-.395.43-.694.099-.3.148-.652.148-1.058 0-.405-.05-.757-.147-1.056-.095-.299-.238-.53-.43-.694a1.015 1.015 0 0 0-.7-.253Zm9.416-1.419c.602 0 1.136.131 1.604.393.466.262.829.643 1.086 1.143.263.5.394 1.097.394 1.794 0 .25-.002.449-.006.596H47.51c.018.288.071.538.164.75a1.3 1.3 0 0 0 .491.596c.214.13.465.196.757.196.319 0 .583-.082.792-.246.209-.167.34-.403.393-.706h1.862a2.48 2.48 0 0 1-.485 1.235 2.54 2.54 0 0 1-1.051.805c-.439.188-.949.283-1.53.283-.655 0-1.225-.125-1.708-.375a2.672 2.672 0 0 1-1.13-1.143c-.267-.508-.4-1.137-.4-1.887 0-.712.14-1.327.418-1.843a2.86 2.86 0 0 1 1.155-1.186c.491-.27 1.051-.405 1.678-.405Zm-.044 1.345c-.274 0-.516.068-.725.203a1.29 1.29 0 0 0-.479.59 2.045 2.045 0 0 0-.132.498h2.562a1.873 1.873 0 0 0-.138-.602 1.061 1.061 0 0 0-.418-.516 1.243 1.243 0 0 0-.67-.173Z" clip-rule="evenodd"/>
+  <path fill="#FCFBF8" d="m26.605 9.995 1.342-4.566h1.924L27.628 12h-2.07l-2.33-6.57h1.98l1.397 4.565Zm-13.013.143h2.256c1.632 0 1.421 1.837 1.418 1.861h-5.603V3h1.93v7.138Zm31.516 1.861h-1.862V3h1.862v8.999Z"/>
+  <path fill="url(#a)" fill-rule="evenodd" d="M2.7 3c1.492 0 2.7 1.192 2.7 2.663v1.012h.9c1.49 0 2.7 1.192 2.7 2.662S7.791 12 6.3 12H0V5.663C0 4.193 1.209 3 2.7 3Z" clip-rule="evenodd"/>
+  <defs>
+    <radialGradient id="a" cx="0" cy="0" r="1" gradientTransform="matrix(-1.54236 7.07838 -10.231 -2.15602 4.627 5.022)" gradientUnits="userSpaceOnUse">
+      <stop offset=".106" stop-color="#FE7B02"/>
+      <stop offset=".394" stop-color="#FE3F21"/>
+      <stop offset=".608" stop-color="#F858BC"/>
+      <stop offset=".929" stop-color="#575ECF"/>
+    </radialGradient>
+  </defs>
+</svg>
+
+
+	</a>
+	
+	<span id="lovable-badge-divider" aria-hidden="true"></span>
+	
+	<button 
+		id="lovable-badge-close"
+		aria-label="Dismiss"
+		title="Dismiss"
+		type="button">
+		<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 16 16" aria-hidden="true">
+			<path d="M10.646 4.646a.5.5 0 1 1 .707.708L8.707 8l2.646 2.646a.5.5 0 1 1-.707.707L8 8.707l-2.646 2.646a.5.5 0 1 1-.708-.707L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708L8 7.293l2.646-2.647Z"/>
+		</svg>
+	</button>
+</aside>
+<script>
+	// Don't show the lovable-badge if the page is in an iframe or if it's being rendered by puppeteer (screenshot service)
+	if (window.self !== window.top || navigator.userAgent.includes('puppeteer')) {
+		// the page is in an iframe
+		var badge = document.getElementById('lovable-badge');
+		if (badge) {
+			badge.style.display = 'none';
+		}
+	}
+
+	// Add click event listener to close button with animation
+	var closeButton = document.getElementById('lovable-badge-close');
+	if (closeButton) {
+		closeButton.addEventListener('click', function(event) {
+			event.preventDefault();
+			event.stopPropagation();
+			var badge = document.getElementById('lovable-badge');
+			if (badge) {
+				badge.classList.add('closing');
+				setTimeout(function() {
+					if (badge) {
+						badge.style.display = 'none';
+					}
+				}, 240);
+			}
+		});
+	}
+</script>
 </body>
 </html>
-'''
 
-path = Path('/mnt/data/singgo_landing_page.html')
-path.write_text(html, encoding='utf-8')
-print(f"Saved to {path}")
