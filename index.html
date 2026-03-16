@@ -1,0 +1,444 @@
+from pathlib import Path
+
+html = r'''<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SingGo | 노래하고, 공유하고, 함께 성장하다</title>
+  <style>
+    :root{
+      --bg:#0f0b1f;
+      --bg2:#1b1235;
+      --primary:#8b5cf6;
+      --primary2:#c084fc;
+      --text:#f8f7ff;
+      --muted:#d6d1ea;
+      --card:rgba(255,255,255,0.08);
+      --line:rgba(255,255,255,0.12);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo",
+      "Noto Sans KR", "Malgun Gothic", sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(192,132,252,0.22), transparent 30%),
+        radial-gradient(circle at top right, rgba(139,92,246,0.22), transparent 30%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      line-height:1.6;
+    }
+    a{text-decoration:none;color:inherit}
+    .container{width:min(1120px, calc(100% - 40px)); margin:0 auto}
+    header{
+      position:sticky; top:0; z-index:10;
+      backdrop-filter: blur(14px);
+      background:rgba(15,11,31,0.65);
+      border-bottom:1px solid rgba(255,255,255,0.06);
+    }
+    nav{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:16px 0;
+    }
+    .logo{font-weight:800; font-size:1.25rem; letter-spacing:-0.03em}
+    .logo span{color:var(--primary2)}
+    .nav-btn, .primary-btn, .ghost-btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      border-radius:999px; padding:12px 18px; font-weight:700;
+      transition:0.2s ease; border:1px solid transparent;
+      cursor:pointer;
+    }
+    .primary-btn{
+      background:linear-gradient(135deg, var(--primary), var(--primary2));
+      color:white;
+      box-shadow:0 10px 28px rgba(139,92,246,0.32);
+    }
+    .primary-btn:hover{transform:translateY(-1px)}
+    .ghost-btn{
+      background:rgba(255,255,255,0.03);
+      border-color:rgba(255,255,255,0.1);
+      color:var(--text);
+    }
+    .hero{
+      padding:84px 0 60px;
+    }
+    .hero-grid{
+      display:grid; grid-template-columns:1.1fr 0.9fr; gap:36px; align-items:center;
+    }
+    .badge{
+      display:inline-block;
+      padding:8px 12px; border-radius:999px;
+      background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1);
+      color:#eee7ff; font-size:0.92rem; margin-bottom:18px;
+    }
+    h1{
+      margin:0 0 18px;
+      font-size:clamp(2.2rem, 5vw, 4.3rem);
+      line-height:1.12;
+      letter-spacing:-0.04em;
+    }
+    .hero p{
+      margin:0 0 28px;
+      color:var(--muted);
+      font-size:1.08rem;
+      max-width:620px;
+    }
+    .button-row{display:flex; gap:12px; flex-wrap:wrap}
+    .hero-card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.05));
+      border:1px solid var(--line);
+      border-radius:28px;
+      padding:22px;
+      box-shadow:0 30px 60px rgba(0,0,0,0.2);
+    }
+    .phone{
+      width:min(340px, 100%);
+      margin:0 auto;
+      background:#120d24;
+      border:1px solid rgba(255,255,255,0.12);
+      border-radius:34px;
+      padding:14px;
+      box-shadow:0 24px 55px rgba(0,0,0,0.35);
+    }
+    .screen{
+      background:linear-gradient(180deg, #221647, #161028);
+      border-radius:26px;
+      padding:18px;
+      min-height:570px;
+      position:relative;
+      overflow:hidden;
+    }
+    .screen::after{
+      content:"";
+      position:absolute;
+      inset:auto -40px -60px auto;
+      width:160px; height:160px;
+      background:radial-gradient(circle, rgba(192,132,252,0.4), transparent 60%);
+    }
+    .mock-top{
+      display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;
+      color:#eee7ff; font-size:0.92rem;
+    }
+    .score-card, .mini-card{
+      background:rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:20px;
+      padding:16px;
+      margin-bottom:12px;
+    }
+    .score{
+      font-size:2.2rem; font-weight:800; letter-spacing:-0.03em;
+    }
+    .bars{display:grid; gap:10px; margin-top:14px}
+    .bar-wrap{display:grid; grid-template-columns:56px 1fr 42px; gap:10px; align-items:center; font-size:0.92rem}
+    .bar{
+      height:10px; border-radius:999px; background:rgba(255,255,255,0.12); overflow:hidden;
+    }
+    .bar span{
+      display:block; height:100%;
+      background:linear-gradient(90deg, #8b5cf6, #c084fc);
+      border-radius:999px;
+    }
+    section{padding:34px 0}
+    .section-head{margin-bottom:22px}
+    .section-head h2{
+      margin:0 0 8px; font-size:clamp(1.7rem, 3vw, 2.4rem); letter-spacing:-0.03em;
+    }
+    .section-head p{margin:0; color:var(--muted)}
+    .intro-card, .value-card, .waitlist-card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:26px;
+    }
+    .features{
+      display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:16px;
+    }
+    .feature{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:22px;
+    }
+    .icon{
+      width:44px; height:44px; border-radius:14px;
+      display:grid; place-items:center;
+      background:linear-gradient(135deg, rgba(139,92,246,0.26), rgba(192,132,252,0.26));
+      margin-bottom:14px; font-size:1.2rem;
+    }
+    .feature h3, .value-card h3, .waitlist-card h3{
+      margin:0 0 8px; font-size:1.2rem;
+    }
+    .feature p, .value-card p, .waitlist-card p, .intro-card p{margin:0; color:var(--muted)}
+    .value-grid{
+      display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:16px;
+      margin-top:18px;
+    }
+    .pill{
+      background:rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:20px; padding:18px;
+    }
+    .pill strong{display:block; margin-bottom:8px}
+    .waitlist-wrap{
+      display:grid; grid-template-columns:1fr 1fr; gap:18px; align-items:stretch;
+    }
+    form{
+      display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;
+    }
+    input[type="email"]{
+      flex:1 1 260px;
+      min-width:220px;
+      border:none; outline:none;
+      border-radius:14px; padding:15px 16px;
+      background:rgba(255,255,255,0.1);
+      color:white; border:1px solid rgba(255,255,255,0.12);
+      font-size:1rem;
+    }
+    input::placeholder{color:#cfc6ea}
+    .note{font-size:0.9rem; color:#cbbfe9; margin-top:10px}
+    .small-list{display:grid; gap:12px}
+    .small-item{
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:18px;
+      padding:16px;
+    }
+    footer{
+      padding:34px 0 50px;
+      color:#cfc6ea;
+      text-align:center;
+      font-size:0.95rem;
+    }
+    .success{
+      display:none;
+      margin-top:14px;
+      color:#f3e8ff;
+      background:rgba(139,92,246,0.18);
+      border:1px solid rgba(192,132,252,0.28);
+      border-radius:14px;
+      padding:12px 14px;
+    }
+    @media (max-width: 900px){
+      .hero-grid, .waitlist-wrap, .value-grid{grid-template-columns:1fr}
+      .features{grid-template-columns:1fr}
+      .hero{padding-top:56px}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <a href="#" class="logo">Sing<span>Go</span></a>
+        <a href="#waitlist" class="nav-btn ghost-btn">출시 알림 받기</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="badge">AI가 분석해주는 새로운 노래 커뮤니티</div>
+          <h1>노래하고,<br>공유하고,<br>함께 성장하다</h1>
+          <p>
+            SingGo는 단순히 노래를 부르는 앱이 아닙니다.
+            AI 보컬 분석과 커뮤니티를 통해 내 노래를 기록하고,
+            다른 사람들과 소통하며 실력을 성장시키는 노래 플랫폼입니다.
+          </p>
+          <div class="button-row">
+            <a href="#waitlist" class="primary-btn">출시 알림 받기</a>
+            <a href="#features" class="ghost-btn">기능 살펴보기</a>
+          </div>
+        </div>
+
+        <div class="hero-card">
+          <div class="phone">
+            <div class="screen">
+              <div class="mock-top">
+                <strong>Judy님의 AI 보컬 리포트</strong>
+                <span>오늘의 점수</span>
+              </div>
+              <div class="score-card">
+                <div style="color:#d7ccf3;font-size:0.95rem;">8282 · 상위 10%</div>
+                <div class="score">77.5점</div>
+                <div style="color:#d7ccf3;font-size:0.95rem;">최근 기록에서 고음 구간 안정성이 개선되고 있어요</div>
+                <div class="bars">
+                  <div class="bar-wrap">
+                    <span>음정</span><div class="bar"><span style="width:82%"></span></div><strong>82</strong>
+                  </div>
+                  <div class="bar-wrap">
+                    <span>박자</span><div class="bar"><span style="width:76%"></span></div><strong>76</strong>
+                  </div>
+                  <div class="bar-wrap">
+                    <span>발성</span><div class="bar"><span style="width:71%"></span></div><strong>71</strong>
+                  </div>
+                  <div class="bar-wrap">
+                    <span>표현력</span><div class="bar"><span style="width:88%"></span></div><strong>88</strong>
+                  </div>
+                </div>
+              </div>
+              <div class="mini-card">
+                <strong style="display:block;margin-bottom:8px;">추천 곡</strong>
+                <div style="color:#eaddff;">밤편지 · Love wins all · 안아줘</div>
+              </div>
+              <div class="mini-card">
+                <strong style="display:block;margin-bottom:8px;">Voice Stage</strong>
+                <div style="color:#d7ccf3;">좋아요, 댓글, 공유로 함께 성장하는 노래 커뮤니티</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="section-head">
+          <h2>SingGo는 어떤 서비스인가요?</h2>
+        </div>
+        <div class="intro-card">
+          <p>
+            SingGo는 노래를 부르고 끝나는 앱이 아니라,
+            <strong>내 노래를 데이터로 기록하고 성장 과정을 확인할 수 있는 서비스</strong>입니다.
+            AI가 음정, 박자, 발성, 표현력을 분석해 피드백을 제공하고,
+            사용자는 자신의 녹음을 공유하며 다른 사람들과 함께 즐기고 성장할 수 있습니다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="features">
+      <div class="container">
+        <div class="section-head">
+          <h2>핵심 기능</h2>
+          <p>SingGo가 노래 경험을 더 재미있고, 더 의미 있게 바꿉니다.</p>
+        </div>
+
+        <div class="features">
+          <article class="feature">
+            <div class="icon">🎵</div>
+            <h3>AI 보컬 분석</h3>
+            <p>음정, 박자, 발성, 표현력을 분석해 상세 리포트를 제공합니다.</p>
+          </article>
+
+          <article class="feature">
+            <div class="icon">🎙️</div>
+            <h3>노래 기록 및 랭킹</h3>
+            <p>언제 어디서든 노래를 녹음하고, 점수와 월간 랭킹으로 성장 흐름을 확인할 수 있습니다.</p>
+          </article>
+
+          <article class="feature">
+            <div class="icon">💬</div>
+            <h3>노래 커뮤니티</h3>
+            <p>내 노래를 공유하고 좋아요, 댓글로 소통하며 함께 노래를 즐길 수 있습니다.</p>
+          </article>
+
+          <article class="feature">
+            <div class="icon">📈</div>
+            <h3>개인 성장 리포트</h3>
+            <p>잘 부르는 곡, 좋아하는 곡, 실력 변화 흐름을 한눈에 확인할 수 있습니다.</p>
+          </article>
+
+          <article class="feature">
+            <div class="icon">🎧</div>
+            <h3>어울리는 곡 추천</h3>
+            <p>내 음성과 스타일에 맞는 곡을 추천받아 더 잘 부를 수 있는 노래를 찾을 수 있습니다.</p>
+          </article>
+
+          <article class="feature">
+            <div class="icon">👩‍🏫</div>
+            <h3>보컬 전문가 연결</h3>
+            <p>보컬 트레이너 정보를 확인하고, 필요할 때 레슨으로 자연스럽게 연결할 수 있습니다.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="section-head">
+          <h2>SingGo만의 고유 가치</h2>
+          <p>단순한 노래 앱이 아니라, 노래 실력을 성장시키는 커뮤니티입니다.</p>
+        </div>
+
+        <div class="value-card">
+          <h3>노래를 더 오래, 더 의미 있게 남기는 방식</h3>
+          <p>
+            SingGo는 노래를 부른 순간을 단순한 소비로 끝내지 않습니다.
+            기록하고, 분석하고, 공유하며 내 실력의 변화를 체감하게 만드는 것이 SingGo의 핵심 가치입니다.
+          </p>
+
+          <div class="value-grid">
+            <div class="pill">
+              <strong>기록되는 성장</strong>
+              내 노래 데이터를 쌓아가며 실력 변화를 확인할 수 있습니다.
+            </div>
+            <div class="pill">
+              <strong>함께하는 즐거움</strong>
+              다른 사용자와 공유하고 소통하며 혼자보다 더 오래 즐길 수 있습니다.
+            </div>
+            <div class="pill">
+              <strong>구체적인 피드백</strong>
+              감으로가 아니라 AI 분석을 통해 보완 포인트를 확인할 수 있습니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="waitlist">
+      <div class="container">
+        <div class="waitlist-wrap">
+          <div class="waitlist-card">
+            <h3>SingGo 출시 알림 받기</h3>
+            <p>
+              SingGo가 출시되면 가장 먼저 알려드립니다.
+              이메일을 남기시면 서비스 출시 소식을 받아보실 수 있습니다.
+            </p>
+
+            <form id="waitlistForm">
+              <input type="email" id="email" placeholder="이메일을 입력하세요" required />
+              <button type="submit" class="primary-btn">출시 알림 받기</button>
+            </form>
+            <div class="note">입력하신 이메일은 SingGo 출시 알림 외에는 사용되지 않습니다.</div>
+            <div id="successMessage" class="success">등록이 완료되었습니다. SingGo 출시 소식을 가장 먼저 알려드릴게요.</div>
+          </div>
+
+          <div class="waitlist-card">
+            <h3>이런 분들께 추천해요</h3>
+            <div class="small-list">
+              <div class="small-item">노래를 좋아하지만 내 실력을 더 키워보고 싶은 사람</div>
+              <div class="small-item">AI 피드백으로 구체적인 분석을 받아보고 싶은 사람</div>
+              <div class="small-item">노래를 기록하고 공유하며 함께 즐기고 싶은 사람</div>
+              <div class="small-item">나에게 어울리는 곡을 추천받고 싶은 사람</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    © 2026 SingGo. 노래하고, 공유하고, 함께 성장하다.
+  </footer>
+
+  <script>
+    const form = document.getElementById('waitlistForm');
+    const successMessage = document.getElementById('successMessage');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      successMessage.style.display = 'block';
+      form.reset();
+    });
+  </script>
+</body>
+</html>
+'''
+
+path = Path('/mnt/data/singgo_landing_page.html')
+path.write_text(html, encoding='utf-8')
+print(f"Saved to {path}")
